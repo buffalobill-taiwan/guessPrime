@@ -76,26 +76,34 @@ function generatePrime(bitLen) {
 }
 
 function generateSemiprime(targetBits) {
-const minBoundary = 2n ** BigInt(targetBits - 1);
-const maxBoundary = 2n ** BigInt(targetBits) - 1n;
+    const minBoundary = 2n ** BigInt(targetBits - 1);
+    const maxBoundary = 2n ** BigInt(targetBits) - 1n;
 
-    for (let attempt = 0; attempt < 10; attempt++) {
-        const pBits = Math.floor(targetBits / 2) - (Math.random() < 0.5 ? 0 : 1);
+    for (let attempt = 0; attempt < 50; attempt++) {
+        const pBits = Math.floor(targetBits / 2) * 1 - (Math.random() < 0.5 ? 0 : 1);
         const p = generatePrime(pBits);
 
         const qMin = (minBoundary + p - 1n) / p;
         const qMax = maxBoundary / p;
 
         if (qMin <= qMax) {
-            const q = randomBigInt(qMin, qMax);
-            if (isPrime(q)) {
-                return { s: p * q, p, q };
+            for (let qAttempt = 0; qAttempt < 20; qAttempt++) {
+                const q = randomBigInt(qMin, qMax);
+                if (isPrime(q)) {
+                    return { s: p * q, p, q };
+                }
             }
         }
     }
 
-    const p = generatePrime(targetBits - 1);
-    const q = generatePrime(1);
+    const p = 3n;
+    const qMin = (minBoundary + p - 1n) / p;
+    const qMax = maxBoundary / p;
+    let q = qMin;
+    if (q % 2n === 0n) q += 1n;
+    while (q <= qMax && !isPrime(q)) {
+        q += 2n;
+    }
     return { s: p * q, p, q };
 }
 
