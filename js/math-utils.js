@@ -79,15 +79,17 @@
     }
 
     function generatePrime(bitLen) {
-        const min = 2n ** BigInt(bitLen - 1);
-        const max = 2n ** BigInt(bitLen) - 1n;
-        let prime;
-        do {
-            prime = randomBigInt(min, max);
-            if (prime % 2n === 0n && prime > 2n) prime += 1n;
-        } while (!isPrime(prime));
-        return prime;
-    }
+    const bitLenBI = BigInt(bitLen);
+    const min = 2n ** (bitLenBI - 1n);
+    const max = (2n ** bitLenBI) - 1n;
+    let prime;
+    do {
+        prime = randomBigInt(min, max);
+        prime |= 1n;
+        prime |= (1n << (bitLenBI - 1n));
+    } while (!isPrime(prime));
+    return prime;
+}
 
     function generateSemiprime(targetBits) {
         const minBoundary = 2n ** BigInt(targetBits - 1);
