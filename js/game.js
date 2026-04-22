@@ -7,8 +7,11 @@ function updateDisplay() {
     document.getElementById('bits').textContent = bits;
     document.getElementById('number').textContent = currentNumber.value.toString();
     document.getElementById('buttons').style.display = 'flex';
-    document.getElementById('result').className = 'result';
-    document.getElementById('result').style.display = 'none';
+    
+    const resultElem = document.getElementById('result');
+    resultElem.className = 'result';
+    resultElem.style.display = 'none';
+    
     document.getElementById('message').textContent = '';
     document.getElementById('factor').textContent = '';
 }
