@@ -6,7 +6,14 @@
 
     function updateDisplay() {
         document.getElementById('bits').textContent = bits;
-        document.getElementById('number').textContent = currentNumber.value.toString();
+        const numberElem = document.getElementById('number');
+        numberElem.textContent = currentNumber.value.toString();
+        
+        // Trigger pop animation
+        numberElem.classList.remove('number-pop');
+        void numberElem.offsetWidth; // Trigger reflow
+        numberElem.classList.add('number-pop');
+
         document.getElementById('buttons').style.display = 'flex';
         
         const resultElem = document.getElementById('result');
@@ -20,14 +27,23 @@
     function guess(userGuessIsPrime) {
         const isCorrect = (userGuessIsPrime === currentNumber.isPrime);
 
+        // Update body background
+        document.body.classList.remove('correct-bg', 'wrong-bg');
+        if (isCorrect) {
+            document.body.classList.add('correct-bg');
+        } else {
+            document.body.classList.add('wrong-bg');
+        }
+
+        const resultElem = document.getElementById('result');
         if (isCorrect) {
             if (bits < MAX_BITS) bits++;
             document.getElementById('message').textContent = '✓ 正確！';
-            document.getElementById('result').className = 'result correct';
+            resultElem.className = 'result correct';
         } else {
             if (bits > MIN_BITS) bits--;
             document.getElementById('message').textContent = '✗ 錯誤！';
-            document.getElementById('result').className = 'result wrong';
+            resultElem.className = 'result wrong';
         }
 
         if (currentNumber.isSemiprime) {
@@ -38,10 +54,12 @@
         }
 
         document.getElementById('buttons').style.display = 'none';
-        document.getElementById('result').style.display = 'block';
+        resultElem.style.display = 'block';
     }
 
+
     function nextQuestion() {
+        document.body.classList.remove('correct-bg', 'wrong-bg');
         currentNumber = generateNumber(bits);
         updateDisplay();
     }
