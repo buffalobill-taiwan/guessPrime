@@ -81,7 +81,7 @@
 
 
     function nextQuestion() {
-        document.body.classList.remove('correct-bg', 'toString'); // Fixing a typo I noticed in my thought process: I should check if there are typos in current code
+        document.body.classList.remove('correct-bg', 'wrong-bg');
         document.body.classList.remove('correct-bg', 'wrong-bg');
         currentNumber = generateNumber(bits);
         updateDisplay();

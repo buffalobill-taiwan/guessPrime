@@ -25,7 +25,7 @@ function randomBigInt(min, max) {
         result = result & mask;
 
         const candidate = min + (result % range);
-        if (candidate >= min && candidate < max) {
+        if (candidate >= min && candidate <= max) {
             return candidate;
         }
     }
