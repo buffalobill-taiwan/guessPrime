@@ -84,7 +84,8 @@ body.wrong-bg {
     background: #e94560;
     color: #fff;
 }
-.keyboard-focus {
+.keyboard-focus,
+.buttons button:focus {
     outline: 3px solid #fff;
     outline-offset: 2px;
 }
