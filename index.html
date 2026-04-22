@@ -18,22 +18,17 @@
         <div class="number-display" id="number">載入中...</div>
 
         <div class="buttons" id="buttons">
-            <button class="btn-yes" onclick="guess(true)">是質數</button>
-            <button class="btn-no" onclick="guess(false)">不是質數</button>
+            <button class="btn-yes" id="btn-yes">是質數</button>
+            <button class="btn-no" id="btn-no">不是質數</button>
         </div>
 
         <div class="result" id="result">
             <div class="message" id="message"></div>
             <div class="factor" id="factor"></div>
-            <button class="next-btn" onclick="nextQuestion()">下一題</button>
+            <button class="next-btn" id="btn-next">下一題</button>
         </div>
     </div>
 
-    <script>
-    if (screen.orientation && screen.orientation.lock) {
-        screen.orientation.lock('portrait').catch(() => {});
-    }
-</script>
     <script src="js/math-utils.js"></script>
     <script src="js/game.js"></script>
 </body>

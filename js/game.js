@@ -99,6 +99,15 @@
     window.guess = guess;
     window.nextQuestion = nextQuestion;
 
+    // Setup event listeners
+    document.getElementById('btn-yes').addEventListener('click', () => guess(true));
+    document.getElementById('btn-no').addEventListener('click', () => guess(false));
+    document.getElementById('btn-next').addEventListener('click', nextQuestion);
+
+    if (screen.orientation && screen.orientation.lock) {
+        screen.orientation.lock('portrait').catch(() => {});
+    }
+
     // Start the game
     nextQuestion();
 })();
