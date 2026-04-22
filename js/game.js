@@ -51,10 +51,12 @@
         document.body.classList.remove('correct-bg', 'wrong-bg');
         if (isCorrect) {
             document.body.classList.add('correct-bg');
-            playTone(880, 'sine', 0.15); // High pitch for correct
+            playTone(880, 'sine', 0.15);
+            if (navigator.vibrate) navigator.vibrate(50);
         } else {
             document.body.classList.add('wrong-bg');
-            playTone(220, 'sawtooth', 0.3); // Low, harsh pitch for wrong
+            playTone(220, 'sawtooth', 0.3);
+            if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
         }
 
         const resultElem = document.getElementById('result');
