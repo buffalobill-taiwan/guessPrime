@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>猜質數</title>
+    <link rel="stylesheet" href="css/uikit.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="uk-container">
+        <div class="header">
+            <div class="bits"><span id="bits">8</span> Bits</div>
+
+        </div>
+
+        <div class="number-display" id="number">載入中...</div>
+
+        <div class="buttons" id="buttons">
+            <button class="btn-yes" onclick="guess(true)">是質數</button>
+            <button class="btn-no" onclick="guess(false)">不是質數</button>
+        </div>
+
+        <div class="result" id="result">
+            <div class="message" id="message"></div>
+            <div class="factor" id="factor"></div>
+            <button class="next-btn" onclick="nextQuestion()">下一題</button>
+        </div>
+    </div>
+
+    <script src="js/uikit.min.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>

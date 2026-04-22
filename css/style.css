@@ -1,0 +1,97 @@
+body {
+    background: #1a1a2e;
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+.uk-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 20px;
+    min-width: 320px;
+}
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+.header .bits {
+    font-size: 1.5rem;
+    color: #e94560;
+    font-weight: bold;
+}
+
+
+.number-display {
+    text-align: center;
+    font-size: 3rem;
+    font-weight: bold;
+    padding: 40px 20px;
+    background: #16213e;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    word-break: break-all;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.buttons {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+.buttons button {
+    flex: 1;
+    padding: 20px;
+    font-size: 1.3rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+.buttons button:active {
+    transform: scale(0.95);
+}
+.btn-yes {
+    background: #4ecca3;
+    color: #1a1a2e;
+}
+.btn-no {
+    background: #e94560;
+    color: #fff;
+}
+.result {
+    text-align: center;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+    display: none;
+}
+.result.correct {
+    background: #4ecca3;
+    color: #1a1a2e;
+    display: block;
+}
+.result.wrong {
+    background: #e94560;
+    color: #fff;
+    display: block;
+}
+.result .factor {
+    font-size: 1.2rem;
+    margin-top: 10px;
+    opacity: 0.9;
+}
+.next-btn {
+    margin-top: 20px;
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    background: #fff;
+    color: #1a1a2e;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
