@@ -4,24 +4,31 @@
     let bits = MIN_BITS;
     let currentNumber = null;
 
-    // Audio context for synthesized sounds
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    let audioCtx = null;
+
+    function getAudioContext() {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        return audioCtx;
+    }
 
     function playTone(freq, type = 'sine', duration = 0.2) {
-        const oscillator = audioCtx.createOscillator();
-        const gainNode = audioCtx.createGain();
+        const ctx = getAudioContext();
+        const oscillator = ctx.createOscillator();
+        const gainNode = ctx.createGain();
 
         oscillator.type = type;
-        oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        oscillator.frequency.setValueAtTime(freq, ctx.currentTime);
 
-        gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+        gainNode.gain.setValueAtTime(0.1, ctx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
 
         oscillator.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
+        gainNode.connect(ctx.destination);
 
         oscillator.start();
-        oscillator.stop(audioCtx.currentTime + duration);
+        oscillator.stop(ctx.currentTime + duration);
     }
 
     function updateDisplay() {
