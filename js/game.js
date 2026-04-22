@@ -5,15 +5,18 @@ let currentNumber = null;
 
 function randomBigInt(min, max) {
     const range = max - min + 1n;
-    const byteLength = Math.ceil(range.toString(2).length / 8);
+    const bitLength = range.toString(2).length;
     let result;
     do {
         result = 0n;
-        for (let i = 0n; i < byteLength; i++) {
-            result = (result << 8n) | BigInt(Math.floor(Math.random() * 256));
+        for (let i = 0; i < bitLength; i++) {
+            if (Math.random() < 0.5) {
+                result |= (1n << BigInt(i));
+            }
         }
-    } while (result >= range);
-    return min + result;
+        result = min + (result % range);
+    } while (result >= max + 1n || result < min); // Double check for safety, though modulo should handle most
+    return result;
 }
 
 function isPrime(n) {
