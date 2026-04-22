@@ -1,136 +1,139 @@
-function randomBigInt(min, max) {
-    const range = max - min + 1n;
-    if (range <= 0n) return min;
+(function() {
+    'use strict';
 
-    const bitLength = range.toString(2).length;
-    const byteLength = Math.ceil(bitLength / 8);
-    const bytes = new Uint8Array(byteLength);
+    function randomBigInt(min, max) {
+        const range = max - min + 1n;
+        if (range <= 0n) return min;
 
-    while (true) {
-        if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
-            crypto.getRandomValues(bytes);
-        } else {
+        const bitLength = range.toString(2).length;
+        const byteLength = Math.ceil(bitLength / 8);
+        const bytes = new Uint8Array(byteLength);
+
+        while (true) {
+            if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+                crypto.getRandomValues(bytes);
+            } else {
+                for (let i = 0; i < byteLength; i++) {
+                    bytes[i] = Math.floor(Math.random() * 256);
+                }
+            }
+
+            let result = 0n;
             for (let i = 0; i < byteLength; i++) {
-                bytes[i] = Math.floor(Math.random() * 256);
+                result = (result << 8n) + BigInt(bytes[i]);
+            }
+
+            const mask = (1n << BigInt(bitLength)) - 1n;
+            result = result & mask;
+
+            const candidate = min + (result % range);
+            if (candidate >= min && candidate <= max) {
+                return candidate;
             }
         }
-
-        let result = 0n;
-        for (let i = 0; i < byteLength; i++) {
-            result = (result << 8n) + BigInt(bytes[i]);
-        }
-
-        // Mask the result to the correct bit length to avoid unnecessary rejection
-        const mask = (1n << BigInt(bitLength)) - 1n;
-        result = result & mask;
-
-        const candidate = min + (result % range);
-        if (candidate >= min && candidate <= max) {
-            return candidate;
-        }
-    }
-}
-
-function isPrime(n) {
-    if (n < 2n) return false;
-    if (n === 2n || n === 3n) return true;
-    if (n % 2n === 0n) return false;
-
-    let d = n - 1n;
-    let s = 0n;
-    while (d % 2n === 0n) {
-        d /= 2n;
-        s += 1n;
     }
 
-    const witnesses = [2n, 3n, 5n, 7n, 11n, 13n, 17n, 19n, 23n, 29n, 31n, 37n];
+    function isPrime(n) {
+        if (n < 2n) return false;
+        if (n === 2n || n === 3n) return true;
+        if (n % 2n === 0n) return false;
 
-    for (const a of witnesses) {
-        if (a >= n) continue;
-        let x = powMod(a, d, n);
-        if (x === 1n || x === n - 1n) continue;
+        let d = n - 1n;
+        let s = 0n;
+        while (d % 2n === 0n) {
+            d /= 2n;
+            s += 1n;
+        }
 
-        let composite = true;
-        for (let r = 1n; r < s; r++) {
-            x = powMod(x, 2n, n);
-            if (x === n - 1n) {
-                composite = false;
-                break;
+        const witnesses = [2n, 3n, 5n, 7n, 11n, 13n, 17n, 19n, 23n, 29n, 31n, 37n];
+
+        for (const a of witnesses) {
+            if (a >= n) continue;
+            let x = powMod(a, d, n);
+            if (x === 1n || x === n - 1n) continue;
+
+            let composite = true;
+            for (let r = 1n; r < s; r++) {
+                x = powMod(x, 2n, n);
+                if (x === n - 1n) {
+                    composite = false;
+                    break;
+                }
             }
+            if (composite) return false;
         }
-        if (composite) return false;
+        return true;
     }
-    return true;
-}
 
-function powMod(a, e, m) {
-    let result = 1n;
-    a = a % m;
-    while (e > 0n) {
-        if (e % 2n === 1n) {
-            result = (result * a) % m;
+    function powMod(a, e, m) {
+        let result = 1n;
+        a = a % m;
+        while (e > 0n) {
+            if (e % 2n === 1n) {
+                result = (result * a) % m;
+            }
+            e = e / 2n;
+            a = (a * a) % m;
         }
-        e = e / 2n;
-        a = (a * a) % m;
+        return result;
     }
-    return result;
-}
 
-function generatePrime(bitLen) {
-    const min = 2n ** BigInt(bitLen - 1);
-    const max = 2n ** BigInt(bitLen) - 1n;
-    let prime;
-    do {
-        prime = randomBigInt(min, max);
-        if (prime % 2n === 0n && prime > 2n) prime += 1n;
-    } while (!isPrime(prime));
-    return prime;
-}
+    function generatePrime(bitLen) {
+        const min = 2n ** BigInt(bitLen - 1);
+        const max = 2n ** BigInt(bitLen) - 1n;
+        let prime;
+        do {
+            prime = randomBigInt(min, max);
+            if (prime % 2n === 0n && prime > 2n) prime += 1n;
+        } while (!isPrime(prime));
+        return prime;
+    }
 
-function generateSemiprime(targetBits) {
-    const minBoundary = 2n ** BigInt(targetBits - 1);
-    const maxBoundary = 2n ** BigInt(targetBits) - 1n;
+    function generateSemiprime(targetBits) {
+        const minBoundary = 2n ** BigInt(targetBits - 1);
+        const maxBoundary = 2n ** BigInt(targetBits) - 1n;
 
-    for (let attempt = 0; attempt < 50; attempt++) {
-        // Randomize pBits range to improve distribution
-        const pBits = Math.floor(targetBits / 2) + (Math.random() < 0.5 ? -1 : 1);
-        const p = generatePrime(Math.max(2, pBits));
+        for (let attempt = 0; attempt < 50; attempt++) {
+            const pBits = Math.floor(targetBits / 2) + (Math.random() < 0.5 ? -1 : 1);
+            const p = generatePrime(Math.max(2, pBits));
 
-        const qMin = (minBoundary + p - 1n) / p;
-        const qMax = maxBoundary / p;
+            const qMin = (minBoundary + p - 1n) / p;
+            const qMax = maxBoundary / p;
 
-        if (qMin <= qMax) {
-            for (let qAttempt = 0; qAttempt < 20; qAttempt++) {
-                const q = randomBigInt(qMin, qMax);
-                if (isPrime(q)) {
-                    const p1 = p < q ? p : q;
-                    const p2 = p < q ? q : p;
-                    return { s: p * q, p: p1, q: p2 };
+            if (qMin <= qMax) {
+                for (let qAttempt = 0; qAttempt < 20; qAttempt++) {
+                    const q = randomBigInt(qMin, qMax);
+                    if (isPrime(q)) {
+                        const p1 = p < q ? p : q;
+                        const p2 = p < q ? q : p;
+                        return { s: p * q, p: p1, q: p2 };
+                    }
                 }
             }
         }
+
+        const smallPrimes = [3n, 5n, 7n, 11n, 13n, 17n];
+        const p = smallPrimes[Math.floor(Math.random() * smallPrimes.length)];
+        const qMin = (minBoundary + p - 1n) / p;
+        const qMax = maxBoundary / p;
+
+        let q = qMin;
+        if (q % 2n === 0n) q += 1n;
+        while (q <= qMax && !isPrime(q)) {
+            q += 2n;
+        }
+        return { s: p * q, p, q };
     }
 
-    // Fallback: Try a small random prime instead of a fixed 3n
-    const smallPrimes = [3n, 5n, 7n, 11n, 13n, 17n];
-    const p = smallPrimes[Math.floor(Math.random() * smallPrimes.length)];
-    const qMin = (minBoundary + p - 1n) / p;
-    const qMax = maxBoundary / p;
-    
-    let q = qMin;
-    if (q % 2n === 0n) q += 1n;
-    while (q <= qMax && !isPrime(q)) {
-        q += 2n;
+    function generateNumber(currentBits) {
+        if (Math.random() < 0.5) {
+            const prime = generatePrime(currentBits);
+            return { value: prime, isPrime: true, isSemiprime: false };
+        } else {
+            const semi = generateSemiprime(currentBits);
+            return { value: semi.s, isPrime: false, isSemiprime: true, p: semi.p, q: semi.q };
+        }
     }
-    return { s: p * q, p, q };
-}
 
-function generateNumber(currentBits) {
-    if (Math.random() < 0.5) {
-        const prime = generatePrime(currentBits);
-        return { value: prime, isPrime: true, isSemiprime: false };
-    } else {
-        const semi = generateSemiprime(currentBits);
-        return { value: semi.s, isPrime: false, isSemiprime: true, p: semi.p, q: semi.q };
-    }
-}
+    window.mathUtils = { generateNumber, isPrime };
+})();
