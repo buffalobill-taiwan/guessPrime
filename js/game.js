@@ -1,4 +1,6 @@
-let bits = 8;
+const MIN_BITS = 8;
+const MAX_BITS = 64;
+let bits = MIN_BITS;
 let currentNumber = null;
 
 function randomBigInt(min, max) {
@@ -59,9 +61,9 @@ function powMod(a, e, m) {
     return result;
 }
 
-function generatePrime(bits) {
-    const min = 2n ** BigInt(bits - 1);
-    const max = 2n ** BigInt(bits) - 1n;
+function generatePrime(bitLen) {
+    const min = 2n ** BigInt(bitLen - 1);
+    const max = 2n ** BigInt(bitLen) - 1n;
     let prime;
     do {
         prime = randomBigInt(min, max);
@@ -70,30 +72,28 @@ function generatePrime(bits) {
     return prime;
 }
 
-function generateSemiprime(bits) {
-    const minBits = 2n ** BigInt(bits - 1);
-    const maxBits = 2n ** BigInt(bits) - 1n;
+function generateSemiprime(targetBits) {
+const minBoundary = 2n ** BigInt(targetBits - 1);
+const maxBoundary = 2n ** BigInt(targetBits) - 1n;
 
-    let p, q, s;
-    let attempts = 0;
-    do {
-        const pBits = Math.random() < 0.5 ? Math.floor(bits / 2) : Math.floor(bits / 2) - 1;
-        const qBits = bits - pBits;
+    for (let attempt = 0; attempt < 10; attempt++) {
+        const pBits = Math.floor(targetBits / 2) - (Math.random() < 0.5 ? 0 : 1);
+        const p = generatePrime(pBits);
 
-        p = generatePrime(pBits);
-        q = generatePrime(qBits);
-        s = p * q;
-        attempts++;
+        const qMin = (minBoundary + p - 1n) / p;
+        const qMax = maxBoundary / p;
 
-        if (attempts > 1000) {
-            p = generatePrime(bits - 1);
-            q = generatePrime(1);
-            s = p * q;
-            break;
+        if (qMin <= qMax) {
+            const q = randomBigInt(qMin, qMax);
+            if (isPrime(q)) {
+                return { s: p * q, p, q };
+            }
         }
-    } while (s < minBits || s > maxBits);
+    }
 
-    return { s, p, q };
+    const p = generatePrime(targetBits - 1);
+    const q = generatePrime(1);
+    return { s: p * q, p, q };
 }
 
 function generateNumber(currentBits) {
@@ -120,11 +120,11 @@ function guess(userGuessIsPrime) {
     const isCorrect = (userGuessIsPrime === currentNumber.isPrime);
 
     if (isCorrect) {
-        if (bits < 64) bits++;
+        if (bits < MAX_BITS) bits++;
         document.getElementById('message').textContent = '✓ 正確！';
         document.getElementById('result').className = 'result correct';
     } else {
-        if (bits > 8) bits--;
+        if (bits > MIN_BITS) bits--;
         document.getElementById('message').textContent = '✗ 錯誤！';
         document.getElementById('result').className = 'result wrong';
     }
