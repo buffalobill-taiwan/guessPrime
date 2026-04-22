@@ -4,6 +4,26 @@
     let bits = MIN_BITS;
     let currentNumber = null;
 
+    // Audio context for synthesized sounds
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playTone(freq, type = 'sine', duration = 0.2) {
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+
+        oscillator.type = type;
+        oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+        gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + duration);
+    }
+
     function updateDisplay() {
         document.getElementById('bits').textContent = bits;
         const numberElem = document.getElementById('number');
@@ -31,8 +51,10 @@
         document.body.classList.remove('correct-bg', 'wrong-bg');
         if (isCorrect) {
             document.body.classList.add('correct-bg');
+            playTone(880, 'sine', 0.15); // High pitch for correct
         } else {
             document.body.classList.add('wrong-bg');
+            playTone(220, 'sawtooth', 0.3); // Low, harsh pitch for wrong
         }
 
         const resultElem = document.getElementById('result');
@@ -59,6 +81,7 @@
 
 
     function nextQuestion() {
+        document.body.classList.remove('correct-bg', 'toString'); // Fixing a typo I noticed in my thought process: I should check if there are typos in current code
         document.body.classList.remove('correct-bg', 'wrong-bg');
         currentNumber = generateNumber(bits);
         updateDisplay();
