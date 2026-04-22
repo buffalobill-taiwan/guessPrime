@@ -82,7 +82,6 @@
 
     function nextQuestion() {
         document.body.classList.remove('correct-bg', 'wrong-bg');
-        document.body.classList.remove('correct-bg', 'wrong-bg');
         currentNumber = generateNumber(bits);
         updateDisplay();
     }

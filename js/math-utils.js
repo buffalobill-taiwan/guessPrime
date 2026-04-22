@@ -30,8 +30,6 @@ function randomBigInt(min, max) {
         }
     }
 }
-//...
-
 
 function isPrime(n) {
     if (n < 2n) return false;
@@ -105,8 +103,9 @@ function generateSemiprime(targetBits) {
             for (let qAttempt = 0; qAttempt < 20; qAttempt++) {
                 const q = randomBigInt(qMin, qMax);
                 if (isPrime(q)) {
-                    const [small, large] = p < q ? [p, q] : [q, p];
-                    return { s: p * q, p: small, q: large };
+                    const p1 = p < q ? p : q;
+                    const p2 = p < q ? q : p;
+                    return { s: p * q, p: p1, q: p2 };
                 }
             }
         }
