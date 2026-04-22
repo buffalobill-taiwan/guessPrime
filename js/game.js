@@ -2,6 +2,7 @@
     const MIN_BITS = 8;
     const MAX_BITS = 64;
     let bits = MIN_BITS;
+    let isProcessing = false;
     let currentNumber = null;
     let focusedButton = 'yes';
     let lastGuess = 'yes';
@@ -67,6 +68,9 @@
     }
 
     function guess(userGuessIsPrime) {
+        if (isProcessing) return;
+        isProcessing = true;
+
         const isCorrect = (userGuessIsPrime === currentNumber.isPrime);
         lastGuess = userGuessIsPrime ? 'yes' : 'no';
 
@@ -102,6 +106,8 @@
         document.getElementById('buttons').style.display = 'none';
         resultElem.style.display = 'block';
         document.getElementById('btn-next').focus();
+
+        setTimeout(() => { isProcessing = false; }, 300);
     }
 
 
