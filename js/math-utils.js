@@ -1,18 +1,37 @@
 function randomBigInt(min, max) {
     const range = max - min + 1n;
+    if (range <= 0n) return min;
+
     const bitLength = range.toString(2).length;
-    let result;
-    do {
-        result = 0n;
-        for (let i = 0; i < bitLength; i++) {
-            if (Math.random() < 0.5) {
-                result |= (1n << BigInt(i));
+    const byteLength = Math.ceil(bitLength / 8);
+    const bytes = new Uint8Array(byteLength);
+
+    while (true) {
+        if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+            crypto.getRandomValues(bytes);
+        } else {
+            for (let i = 0; i < byteLength; i++) {
+                bytes[i] = Math.floor(Math.random() * 256);
             }
         }
-        result = min + (result % range);
-    } while (result >= max + 1n || result < min); // Double check for safety, though modulo should handle most
-    return result;
+
+        let result = 0n;
+        for (let i = 0; i < byteLength; i++) {
+            result = (result << 8n) + BigInt(bytes[i]);
+        }
+
+        // Mask the result to the correct bit length to avoid unnecessary rejection
+        const mask = (1n << BigInt(bitLength)) - 1n;
+        result = result & mask;
+
+        const candidate = min + (result % range);
+        if (candidate >= min && candidate < max) {
+            return candidate;
+        }
+    }
 }
+//...
+
 
 function isPrime(n) {
     if (n < 2n) return false;
@@ -71,12 +90,13 @@ function generatePrime(bitLen) {
 }
 
 function generateSemiprime(targetBits) {
-const minBoundary = 2n ** BigInt(targetBits - 1);
-const maxBoundary = 2n ** BigInt(targetBits) - 1n;
+    const minBoundary = 2n ** BigInt(targetBits - 1);
+    const maxBoundary = 2n ** BigInt(targetBits) - 1n;
 
     for (let attempt = 0; attempt < 50; attempt++) {
-        const pBits = Math.floor(targetBits / 2) * 1 - (Math.random() < 0.5 ? 0 : 1);
-        const p = generatePrime(pBits);
+        // Randomize pBits range to improve distribution
+        const pBits = Math.floor(targetBits / 2) + (Math.random() < 0.5 ? -1 : 1);
+        const p = generatePrime(Math.max(2, pBits));
 
         const qMin = (minBoundary + p - 1n) / p;
         const qMax = maxBoundary / p;
@@ -91,9 +111,12 @@ const maxBoundary = 2n ** BigInt(targetBits) - 1n;
         }
     }
 
-    const p = 3n;
+    // Fallback: Try a small random prime instead of a fixed 3n
+    const smallPrimes = [3n, 5n, 7n, 11n, 13n, 17n];
+    const p = smallPrimes[Math.floor(Math.random() * smallPrimes.length)];
     const qMin = (minBoundary + p - 1n) / p;
     const qMax = maxBoundary / p;
+    
     let q = qMin;
     if (q % 2n === 0n) q += 1n;
     while (q <= qMax && !isPrime(q)) {
