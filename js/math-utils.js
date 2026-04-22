@@ -89,6 +89,10 @@
         return prime;
     }
 
+    function sortFactors(a, b) {
+        return a < b ? { p: a, q: b } : { p: b, q: a };
+    }
+
     function generateSemiprime(targetBits) {
         const minBoundary = 2n ** BigInt(targetBits - 1);
         const maxBoundary = 2n ** BigInt(targetBits) - 1n;
@@ -104,9 +108,8 @@
                 for (let qAttempt = 0; qAttempt < 20; qAttempt++) {
                     const q = randomBigInt(qMin, qMax);
                     if (isPrime(q)) {
-                        const p1 = p < q ? p : q;
-                        const p2 = p < q ? q : p;
-                        return { s: p * q, p: p1, q: p2 };
+                        const factors = sortFactors(p, q);
+                        return { s: p * q, p: factors.p, q: factors.q };
                     }
                 }
             }
@@ -122,7 +125,8 @@
         while (q <= qMax && !isPrime(q)) {
             q += 2n;
         }
-        return { s: p * q, p, q };
+        const factors = sortFactors(p, q);
+        return { s: p * q, p: factors.p, q: factors.q };
     }
 
     function generateNumber(currentBits) {
