@@ -105,7 +105,8 @@ function generateSemiprime(targetBits) {
             for (let qAttempt = 0; qAttempt < 20; qAttempt++) {
                 const q = randomBigInt(qMin, qMax);
                 if (isPrime(q)) {
-                    return { s: p * q, p, q };
+                    const [small, large] = p < q ? [p, q] : [q, p];
+                    return { s: p * q, p: small, q: large };
                 }
             }
         }
