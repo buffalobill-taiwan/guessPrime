@@ -84,6 +84,10 @@ body.wrong-bg {
     background: #e94560;
     color: #fff;
 }
+.keyboard-focus {
+    outline: 3px solid #fff;
+    outline-offset: 2px;
+}
 .result {
     text-align: center;
     padding: 20px;

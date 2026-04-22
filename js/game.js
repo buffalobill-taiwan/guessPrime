@@ -3,8 +3,22 @@
     const MAX_BITS = 64;
     let bits = MIN_BITS;
     let currentNumber = null;
+    let focusedButton = 'yes';
+    let lastGuess = 'yes';
 
     let audioCtx = null;
+
+    function switchFocus() {
+        focusedButton = focusedButton === 'yes' ? 'no' : 'yes';
+        updateFocusIndicator();
+    }
+
+    function updateFocusIndicator() {
+        const btnYes = document.getElementById('btn-yes');
+        const btnNo = document.getElementById('btn-no');
+        btnYes.classList.toggle('keyboard-focus', focusedButton === 'yes');
+        btnNo.classList.toggle('keyboard-focus', focusedButton === 'no');
+    }
 
     function getAudioContext() {
         if (!audioCtx) {
@@ -36,9 +50,8 @@
         const numberElem = document.getElementById('number');
         numberElem.textContent = currentNumber.value.toString();
         
-        // Trigger pop animation
         numberElem.classList.remove('number-pop');
-        void numberElem.offsetWidth; // Trigger reflow
+        void numberElem.offsetWidth;
         numberElem.classList.add('number-pop');
 
         document.getElementById('buttons').style.display = 'flex';
@@ -49,12 +62,14 @@
         
         document.getElementById('message').textContent = '';
         document.getElementById('factor').textContent = '';
+
+        updateFocusIndicator();
     }
 
     function guess(userGuessIsPrime) {
         const isCorrect = (userGuessIsPrime === currentNumber.isPrime);
+        lastGuess = userGuessIsPrime ? 'yes' : 'no';
 
-        // Update body background
         document.body.classList.remove('correct-bg', 'wrong-bg');
         if (isCorrect) {
             document.body.classList.add('correct-bg');
@@ -86,12 +101,14 @@
 
         document.getElementById('buttons').style.display = 'none';
         resultElem.style.display = 'block';
+        document.getElementById('btn-next').focus();
     }
 
 
     function nextQuestion() {
         document.body.classList.remove('correct-bg', 'wrong-bg');
         currentNumber = window.mathUtils.generateNumber(bits);
+        focusedButton = lastGuess;
         updateDisplay();
     }
 
@@ -104,10 +121,28 @@
     document.getElementById('btn-no').addEventListener('click', () => guess(false));
     document.getElementById('btn-next').addEventListener('click', nextQuestion);
 
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight' ||
+            e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+            if (document.getElementById('buttons').style.display !== 'none') {
+                e.preventDefault();
+                switchFocus();
+            }
+        }
+        if (e.key === 'Enter') {
+            if (document.getElementById('result').style.display === 'block') {
+                e.preventDefault();
+                nextQuestion();
+            } else if (document.getElementById('buttons').style.display !== 'none') {
+                e.preventDefault();
+                guess(focusedButton === 'yes');
+            }
+        }
+    });
+
     if (screen.orientation && screen.orientation.lock) {
         screen.orientation.lock('portrait').catch(() => {});
     }
 
-    // Start the game
     nextQuestion();
 })();
