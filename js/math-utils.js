@@ -94,26 +94,26 @@
     function generateSemiprime(targetBits) {
         const minBoundary = 2n ** BigInt(targetBits - 1);
         const maxBoundary = 2n ** BigInt(targetBits) - 1n;
+        const maxAttempts = 50;
 
-        for (let i = 0; i < 50; i++) {
+        // 1. Probabilistic attempt: random (p, q) pairs
+        for (let i = 0; i < maxAttempts; i++) {
             const pBits = Math.floor(targetBits / 2) + (Math.random() < 0.5 ? -1 : 1);
             const p = generatePrime(Math.max(2, pBits));
-
             const qMin = (minBoundary + p - 1n) / p;
             const qMax = maxBoundary / p;
 
             if (qMin <= qMax) {
-                for (let qAttempt = 0; qAttempt < 20; qAttempt++) {
-                    const q = randomBigInt(qMin, qMax);
-                    if (isPrime(q)) {
-                        const fp = p < q ? p : q;
-                        const fq = p < q ? q : p;
-                        return { s: p * q, p: fp, q: fq };
-                    }
+                const q = randomBigInt(qMin, qMax);
+                if (isPrime(q)) {
+                    const fp = p < q ? p : q;
+                    const fq = p < q ? q : p;
+                    return { s: p * q, p: fp, q: fq };
                 }
             }
         }
 
+        // 2. Safe Fallback: bounded search with small p
         const smallPrimes = [3n, 5n, 7n, 11n, 13n, 17n];
         const p = smallPrimes[Math.floor(Math.random() * smallPrimes.length)];
         const qMin = (minBoundary + p - 1n) / p;
@@ -121,8 +121,12 @@
 
         let q = qMin;
         if (q % 2n === 0n) q += 1n;
-        while (q <= qMax && !isPrime(q)) {
+        let safetyCounter = 0;
+        const maxSafetyLimit = 100;
+
+        while (q <= qMax && !isPrime(q) && safetyCounter < maxSafetyLimit) {
             q += 2n;
+            safetyCounter++;
         }
         const fp = p < q ? p : q;
         const fq = p < q ? q : p;
