@@ -5,10 +5,14 @@
 ## 遊戲玩法
 
 1.  畫面會顯示一個數字及其位元數 (Bits)。
-2.  玩家需要點擊「是質數」或「not 質數」按鈕進行猜測。
+2.  玩家需要點擊「是質數」或「不是質數」按鈕進行猜測。
 3.  **正確**：位元數會增加 1 (最高 64 bits)，表示難度提升。
-4.  **錯誤**：位數會減少 1 (最低 8 bits)，表示難度降低。
+4.  **錯誤**：位元數會減少 1 (最低 8 bits)，表示難度降低。
 5.  如果數字是**半質數** (p × q)，遊戲會顯示其因數分解結果。
+
+## 隱藏功能
+
+- **作弊模式**：輸入 `↑↑↓↓←→←→ba` 可啟動作弊模式，正確答案會顯示 👉 提示。
 
 ## 技術特點
 
@@ -17,10 +21,12 @@
 - **感官回饋 (Sensory Feedback)**:
   - **音訊回饋**: 利用 `Web Audio API` 實作不同頻率與音色的音訊提示（正確時使用高頻 Sine 波，錯誤時使用低頻 Sawtooth 波）。
   - **觸覺回饋**: 支援 `Vibration API`，在手機裝置上提供震動提示。
-  - **視覺動畫**: 整合 `CSS Transitions` 與 `Key  Animations` (如 `pop` 與 `shake` 效果)，以及數字更新時的 `reflow` 觸發。
+  - **視覺動畫**: 整合 `CSS Transitions` 與 `Key Animations` (如 `pop` 與 `shake` 效果)，以及數字更新時的 `reflow` 觸發。
 - **核心演算法 (Core Algorithm)**:
   - 使用 **BigInt** 處理高位元（高達 64-bit）的大整數運算。
-  - 採用 **Miller-Rabin 素性測試** 演算法，確保在大數字下的判斷效率與準確性。
+  - 採用 **Miller-Rabin 素性測試** 演算法的確定性集合，確保在 64 位元下的判斷效率與準確性。
+- **安全性**:
+  - 使用 `crypto.getRandomValues` 取代 `Math.random`，確保密碼學安全的隨機數生成。
 - **數字生成策略**:
   - 50% 機率生成質數。
   - 50% 機率生成半質數 (p × q)，並自動計算因數分解。
@@ -29,7 +35,7 @@
 
 - **前端框架**: 原生 HTML5, JavaScript (ES6+), CSS3
 - **佈局框架**: UIKit CSS framework
-- **API 使用**: Web Audio API, Vibration API, Web Crypto API (用於隨機數生成)
+- **API 使用**: Web Audio API, Vibration API, Web Crypto API
 
 ## 如何執行
 
