@@ -80,6 +80,8 @@
         const numberElem = document.getElementById('number');
         numberElem.textContent = currentNumber.value.toString();
         
+        numberElem.style.fontSize = bits >= 40 ? '1.5rem' : '3rem';
+        
         numberElem.classList.remove('number-pop');
         void numberElem.offsetWidth;
         numberElem.classList.add('number-pop');
