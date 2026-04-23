@@ -9,18 +9,6 @@
 
     let audioCtx = null;
 
-    function switchFocus() {
-        focusedButton = focusedButton === 'yes' ? 'no' : 'yes';
-        updateFocusIndicator();
-    }
-
-    function updateFocusIndicator() {
-        const btnYes = document.getElementById('btn-yes');
-        const btnNo = document.getElementById('btn-no');
-        btnYes.classList.toggle('keyboard-focus', focusedButton === 'yes');
-        btnNo.classList.toggle('keyboard-focus', focusedButton === 'no');
-    }
-
     function getAudioContext() {
         if (!audioCtx) {
             audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -44,6 +32,47 @@
 
         oscillator.start();
         oscillator.stop(ctx.currentTime + duration);
+    }
+
+    let cheatMode = false;
+    const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+    let keyIndex = 0;
+
+    function updateFocusIndicator() {
+        const btnYes = document.getElementById('btn-yes');
+        const btnNo = document.getElementById('btn-no');
+        btnYes.classList.toggle('keyboard-focus', focusedButton === 'yes');
+        btnNo.classList.toggle('keyboard-focus', focusedButton === 'no');
+    }
+
+    function switchFocus() {
+        focusedButton = focusedButton === 'yes' ? 'no' : 'yes';
+        updateFocusIndicator();
+    }
+
+    function updateCheatIndicator() {
+        document.getElementById('result').classList.toggle('cheat-mode', cheatMode);
+        if (cheatMode) {
+            showHint();
+        } else {
+            document.getElementById('btn-yes').textContent = '是質數';
+            document.getElementById('btn-no').textContent = '不是質數';
+        }
+    }
+
+    function showHint() {
+        if (cheatMode && currentNumber) {
+            const hint = currentNumber.isPrime ? '👉' : '👉';
+            const btnYes = document.getElementById('btn-yes');
+            const btnNo = document.getElementById('btn-no');
+            if (currentNumber.isPrime) {
+                btnYes.textContent = hint + '是質數';
+                btnNo.textContent = '不是質數';
+            } else {
+                btnYes.textContent = '是質數';
+                btnNo.textContent = hint + '不是質數';
+            }
+        }
     }
 
     function updateDisplay() {
@@ -116,6 +145,7 @@
         currentNumber = window.mathUtils.generateNumber(bits);
         focusedButton = lastGuess;
         updateDisplay();
+        showHint();
     }
 
     // Expose only necessary functions to the global scope
@@ -128,6 +158,17 @@
     document.getElementById('btn-next').addEventListener('click', nextQuestion);
 
     document.addEventListener('keydown', function(e) {
+        if (e.key === konamiCode[keyIndex]) {
+            keyIndex++;
+            if (keyIndex === konamiCode.length) {
+                cheatMode = !cheatMode;
+                keyIndex = 0;
+                updateCheatIndicator();
+            }
+        } else {
+            keyIndex = 0;
+        }
+
         if (e.key === 'ArrowLeft' || e.key === 'ArrowRight' ||
             e.key === 'ArrowUp' || e.key === 'ArrowDown') {
             if (document.getElementById('buttons').style.display !== 'none') {
