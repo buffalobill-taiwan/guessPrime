@@ -53,6 +53,10 @@
     function updateCheatIndicator() {
         document.getElementById('result').classList.toggle('cheat-mode', cheatMode);
         if (cheatMode) {
+            const notes = [523, 659, 784, 880, 1047, 784, 659, 523];
+            notes.forEach((freq, i) => {
+                setTimeout(() => playTone(freq, 'triangle', 0.15), i * 80);
+            });
             showHint();
         } else {
             document.getElementById('btn-yes').textContent = '是質數';
