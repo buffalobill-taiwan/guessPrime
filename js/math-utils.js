@@ -19,28 +19,14 @@
         const byteLength = Math.ceil(bitLength / 8);
         const bytes = new Uint8Array(byteLength);
 
-        while (true) {
-            if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
-                crypto.getRandomValues(bytes);
-            } else {
-                for (let i = 0; i < byteLength; i++) {
-                    bytes[i] = Math.floor(Math.random() * 256);
-                }
-            }
+        crypto.getRandomValues(bytes);
 
-            let result = 0n;
-            for (let i = 0; i < byteLength; i++) {
-                result = (result << 8n) + BigInt(bytes[i]);
-            }
-
-            const mask = (1n << BigInt(bitLength)) - 1n;
-            result = result & mask;
-
-            const candidate = min + (result % range);
-            if (candidate >= min && candidate <= max) {
-                return candidate;
-            }
+        let result = 0n;
+        for (let i = 0; i < byteLength; i++) {
+            result = (result << 8n) + BigInt(bytes[i]);
         }
+
+        return min + (result % range);
     }
 
     function isPrime(n) {
@@ -55,10 +41,7 @@
             s += 1n;
         }
 
-        const bits = n.toString(2).length;
-        const witnesses = bits <= 64
-            ? [2n, 325n, 9375n, 28178n, 450775n, 9780504n, 1795265022n]
-            : [2n, 3n, 5n, 7n, 11n, 13n, 17n];
+        const witnesses = [2n, 325n, 9375n, 28178n, 450775n, 9780504n, 1795265022n];
 
         for (const a of witnesses) {
             if (a >= n) continue;
