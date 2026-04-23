@@ -1,6 +1,16 @@
 (function() {
     'use strict';
 
+    function secureRandom() {
+        const arr = new Uint32Array(1);
+        if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+            crypto.getRandomValues(arr);
+        } else {
+            arr[0] = Math.floor(Math.random() * 0xffffffff);
+        }
+        return arr[0] / 0xffffffff;
+    }
+
     function randomBigInt(min, max) {
         const range = max - min + 1n;
         if (range <= 0n) return min;
@@ -98,7 +108,7 @@
 
         // 1. Probabilistic attempt: random (p, q) pairs
         for (let i = 0; i < maxAttempts; i++) {
-            const pBits = Math.floor(targetBits / 2) + (Math.random() < 0.5 ? -1 : 1);
+            const pBits = Math.floor(targetBits / 2) + (secureRandom() < 0.5 ? -1 : 1);
             const p = generatePrime(Math.max(2, pBits));
             const qMin = (minBoundary + p - 1n) / p;
             const qMax = maxBoundary / p;
@@ -115,7 +125,7 @@
 
         // 2. Safe Fallback: bounded search with small p
         const smallPrimes = [3n, 5n, 7n, 11n, 13n, 17n];
-        const p = smallPrimes[Math.floor(Math.random() * smallPrimes.length)];
+        const p = smallPrimes[Math.floor(secureRandom() * smallPrimes.length)];
         const qMin = (minBoundary + p - 1n) / p;
         const qMax = maxBoundary / p;
 
@@ -134,7 +144,7 @@
     }
 
     function generateNumber(currentBits) {
-        if (Math.random() < 0.5) {
+        if (secureRandom() < 0.5) {
             const prime = generatePrime(currentBits);
             return { value: prime, isPrime: true, isSemiprime: false };
         } else {
