@@ -132,10 +132,10 @@
     function generateNumber(currentBits) {
         if (secureRandom() < 0.5) {
             const prime = generatePrime(currentBits);
-            return { value: prime, isPrime: true, isSemiprime: false };
+            return { value: prime, isPrime: true };
         } else {
             const semi = generateSemiprime(currentBits);
-            return { value: semi.s, isPrime: false, isSemiprime: true, p: semi.p, q: semi.q };
+            return { value: semi.s, isPrime: false, p: semi.p, q: semi.q };
         }
     }
 

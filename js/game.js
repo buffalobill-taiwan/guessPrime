@@ -96,7 +96,7 @@
             resultElem.className = 'result wrong';
         }
 
-        if (currentNumber.isSemiprime) {
+        if (!currentNumber.isPrime) {
             document.getElementById('factor').textContent =
                 `${currentNumber.p} × ${currentNumber.q} = ${currentNumber.value}`;
         } else {
