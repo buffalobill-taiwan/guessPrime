@@ -55,7 +55,10 @@
             s += 1n;
         }
 
-        const witnesses = [2n, 3n, 5n, 7n, 11n, 13n, 17n, 19n, 23n, 29n, 31n, 37n];
+        const bits = n.toString(2).length;
+        const witnesses = bits <= 64
+            ? [2n, 325n, 9375n, 28178n, 450775n, 9780504n, 1795265022n]
+            : [2n, 3n, 5n, 7n, 11n, 13n, 17n];
 
         for (const a of witnesses) {
             if (a >= n) continue;
