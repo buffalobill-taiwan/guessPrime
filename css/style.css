@@ -31,6 +31,8 @@ body.wrong-bg {
     font-size: 1.5rem;
     color: #e94560;
     font-weight: bold;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 
