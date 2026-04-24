@@ -37,6 +37,21 @@
     let cheatMode = false;
     const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
     let keyIndex = 0;
+    let bitsClickCount = 0;
+    let bitsClickTimer = null;
+
+    function handleBitsClick() {
+        bitsClickCount++;
+        clearTimeout(bitsClickTimer);
+        bitsClickTimer = setTimeout(() => {
+            bitsClickCount = 0;
+        }, 800);
+        if (bitsClickCount >= 8) {
+            cheatMode = !cheatMode;
+            bitsClickCount = 0;
+            updateCheatIndicator();
+        }
+    }
 
     function updateFocusIndicator() {
         const btnYes = document.getElementById('btn-yes');
@@ -162,6 +177,7 @@
     document.getElementById('btn-yes').addEventListener('click', () => guess(true));
     document.getElementById('btn-no').addEventListener('click', () => guess(false));
     document.getElementById('btn-next').addEventListener('click', nextQuestion);
+    document.getElementById('bits-display').addEventListener('click', handleBitsClick);
 
     document.addEventListener('keydown', function(e) {
         if (e.key === konamiCode[keyIndex]) {
