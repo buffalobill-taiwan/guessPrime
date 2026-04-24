@@ -1,5 +1,7 @@
 # 猜質數 (guessPrime)
 
+**線上遊戲**: https://buffalobill-taiwan.github.io/guessPrime/
+
 這是一個簡單且具高度互動性的 HTML 遊戲，玩家需要判斷畫面上顯示的數字是質數還是非質數（半質數）。
 
 ## 遊戲玩法
